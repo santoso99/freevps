@@ -58,11 +58,15 @@ jobs:
 
       - name: Install Tailscale
         run: |
+          # Mengunduh dan menginstal Tailscale MSI untuk Windows
           $tsUrl = "https://pkgs.tailscale.com/stable/tailscale-setup-1.82.0-amd64.msi"
           $installerPath = "$env:TEMP\tailscale.msi"
           Invoke-WebRequest -Uri $tsUrl -OutFile $installerPath
           Start-Process msiexec.exe -ArgumentList "/i", "`"$installerPath`"", "/quiet", "/norestart" -Wait
-          & "$env:ProgramFiles\Tailscale\tailscale.exe" up --authkey=${{ secrets.TAILSCALE_AUTH_KEY }} --hostname=gh-runner-$env:GITHUB_RUN_ID
+          
+          # Mengaktifkan Tailscale menggunakan Auth Key yang kamu berikan
+          # Catatan: Di Windows kita menggunakan file exe yang sudah terinstal
+          & "$env:ProgramFiles\Tailscale\tailscale.exe" up --authkey=tskey-auth-kECPu5LrrG11CNTRL-quozA5xYVciuGznheYVLdihYeiBz76aQ6 --hostname=gh-runner-$env:GITHUB_RUN_ID
 
       - name: Final Setup & Maintain Connection
         run: |

